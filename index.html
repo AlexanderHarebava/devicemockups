@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Мокап Студия — видео в смартфоне (2D)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+--ink:#14171d; --panel:#1b1f27; --panel2:#212632; --line:#2b3140;
+--text:#edf0f6; --muted:#98a1b3; --amber:#f0b35e; --amber-ink:#221703;
+--teal:#2fbfa4; --radius:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+font-family:Manrope,system-ui,sans-serif;color:var(--text);
+background:
+radial-gradient(1200px 500px at 75% -10%, #232936 0%, transparent 60%),
+var(--ink);
+display:flex;flex-direction:column;overflow:hidden;
+}
+/* ---------- ШАПКА ---------- */
+header{
+height:64px;flex:0 0 auto;display:flex;align-items:center;gap:16px;
+padding:0 22px;border-bottom:1px solid var(--line);
+}
+.logo{display:flex;align-items:center;gap:12px}
+.logo-badge{
+width:38px;height:38px;border-radius:11px;display:grid;place-items:center;
+background:linear-gradient(145deg,#ffd28a,var(--amber) 60%,#c9852f);
+box-shadow:0 4px 14px rgba(240,179,94,.35);
+}
+.logo h1{font-family:Unbounded;font-size:15px;font-weight:800;letter-spacing:.06em}
+.logo small{display:block;font-size:11px;color:var(--muted);font-weight:500;letter-spacing:.02em}
+header .spacer{flex:1}
+.export-note{font-size:11px;color:var(--muted);text-align:right;line-height:1.5}
+/* ---------- КНОПКИ ---------- */
+.btn{
+border:none;cursor:pointer;font-family:Manrope;font-weight:700;font-size:13px;
+padding:10px 18px;border-radius:10px;display:inline-flex;align-items:center;gap:8px;
+transition:transform .15s,box-shadow .15s,background .15s;position:relative;overflow:hidden;
+}
+
+.export-settings{ display:grid; gap:12px; margin:14px 0 4px; }
+.opt-group{ display:grid; gap:6px; }
+.opt-label{ font-size:11px; letter-spacing:.08em; text-transform:uppercase; opacity:.6; }
+.seg{ display:flex; gap:6px; flex-wrap:wrap; }
+.seg button{
+  flex:1; min-width:56px; padding:7px 10px; border-radius:10px;
+  border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.04);
+  color:inherit; font:inherit; font-size:13px; cursor:pointer;
+  transition:border-color .15s, background .15s;
+}
+.seg button:hover{ border-color:rgba(255,255,255,.28); }
+.seg button.active{ background:rgba(255,255,255,.14); border-color:rgba(255,255,255,.4); font-weight:600; }
+.opt-hint{ margin:0; font-size:11.5px; opacity:.55; }
+
+.btn:active{transform:translateY(1px)}
+.btn.amber{background:linear-gradient(160deg,#ffcf85,var(--amber));color:var(--amber-ink);box-shadow:0 4px 16px rgba(240,179,94,.3)}
+.btn.amber:hover{box-shadow:0 6px 22px rgba(240,179,94,.45);transform:translateY(-1px)}
+.btn.teal{background:linear-gradient(160deg,#5cd8c0,var(--teal));color:#04211b;box-shadow:0 4px 14px rgba(47,191,164,.25)}
+.btn.ghost{background:var(--panel2);color:var(--text);border:1px solid var(--line)}
+.btn.ghost:hover{border-color:#3d4657}
+.btn:disabled{opacity:.6;cursor:wait}
+.btn .fill-bar{position:absolute;left:0;bottom:0;height:3px;background:rgba(0,0,0,.35);width:0%;transition:width .2s}
+/* ---------- РАСКЛАДКА ---------- */
+main{flex:1;display:grid;grid-template-columns:340px 1fr;min-height:0}
+aside{
+border-right:1px solid var(--line);overflow-y:auto;padding:20px 20px 40px;
+background:var(--panel);scrollbar-width:thin;scrollbar-color:#333b4a transparent;
+}
+aside::-webkit-scrollbar{width:8px}
+aside::-webkit-scrollbar-thumb{background:#333b4a;border-radius:4px}
+.panel-sec{margin-bottom:26px}
+.panel-sec h3{
+font-family:Unbounded;font-size:11px;font-weight:700;letter-spacing:.18em;
+text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:10px;margin-bottom:14px;
+}
+.panel-sec h3 .num{color:var(--amber);font-size:12px}
+.row{display:flex;gap:8px;margin-top:10px}
+.row .btn{flex:1;justify-content:center;padding:10px 8px;font-size:12.5px}
+/* ---------- ДРОП-ЗОНА ---------- */
+.dropzone{
+border:1.5px dashed #3a4252;border-radius:var(--radius);padding:20px 12px;text-align:center;
+cursor:pointer;transition:border-color .2s,background .2s;background:rgba(255,255,255,.015);
+}
+.dropzone:hover,.dropzone.over{border-color:var(--amber);background:rgba(240,179,94,.06)}
+.dropzone svg{opacity:.85;margin-bottom:8px}
+.dropzone div{font-size:13px;font-weight:700}
+.dropzone small{color:var(--muted);font-size:11px;display:block;margin-top:4px;letter-spacing:.04em}
+/* ---------- ТРАНСПОРТ ВИДЕО ---------- */
+.transport{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px}
+.ibtn{
+height:38px;border-radius:10px;background:var(--panel2);border:1px solid var(--line);
+color:#c6cddb;cursor:pointer;display:grid;place-items:center;transition:all .15s;
+}
+.ibtn:hover{border-color:#404a5d;color:#fff}
+.ibtn.active{color:var(--amber);border-color:rgba(240,179,94,.5);background:rgba(240,179,94,.08)}
+/* ---------- СЕГМЕНТЫ / СЛАЙДЕРЫ / СВИТЧИ ---------- */
+.seg{display:flex;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:3px;gap:3px}
+.seg button{
+flex:1;border:none;background:transparent;color:var(--muted);font-family:Manrope;font-weight:700;
+font-size:11.5px;padding:7px 4px;border-radius:7px;cursor:pointer;transition:all .15s;
+}
+.seg button.on{background:#333c4d;color:#fff;box-shadow:0 2px 6px rgba(0,0,0,.3)}
+.lbl{display:flex;justify-content:space-between;align-items:baseline;font-size:12px;font-weight:600;color:#c3cad8;margin:14px 0 6px}
+.lbl output{font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;appearance:none;height:4px;border-radius:2px;background:#313848;outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{
+appearance:none;width:15px;height:15px;border-radius:50%;background:var(--amber);
+border:2px solid #14171d;box-shadow:0 1px 6px rgba(0,0,0,.5);transition:transform .15s;
+}
+input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2)}
+input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;background:var(--amber);border:2px solid #14171d}
+.switch-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;font-size:13px;font-weight:600}
+.switch{position:relative;width:38px;height:22px;flex:0 0 auto;cursor:pointer}
+.switch input{display:none}
+.switch i{position:absolute;inset:0;background:#333b4a;border-radius:20px;transition:background .2s}
+.switch i::after{
+content:'';position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;
+background:#aab2c2;transition:all .2s;
+}
+.switch input:checked + i{background:var(--amber)}
+.switch input:checked + i::after{left:19px;background:#1c1507}
+/* ---------- СВОТЧИ ---------- */
+.sw-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.sw{
+aspect-ratio:1;border-radius:10px;border:2px solid transparent;cursor:pointer;
+transition:transform .15s,border-color .15s;position:relative;
+}
+.sw:hover{transform:scale(1.07)}
+.sw.on{border-color:#fff;box-shadow:0 0 0 2px var(--amber)}
+.frame-grid{display:flex;gap:10px}
+.frame-sw{
+flex:1;height:36px;border-radius:10px;cursor:pointer;border:2px solid transparent;transition:all .15s;
+}
+.frame-sw:hover{transform:translateY(-2px)}
+.frame-sw.on{border-color:var(--amber);box-shadow:0 0 0 2px rgba(240,179,94,.35)}
+.color-row{display:flex;align-items:center;gap:10px;margin-top:12px;font-size:12.5px;font-weight:600;color:#c3cad8}
+input[type=color]{
+width:42px;height:30px;border:1px solid var(--line);border-radius:8px;background:var(--panel2);
+padding:2px;cursor:pointer;
+}
+/* ---------- СЦЕНА (2D) ---------- */
+.stage{
+position:relative;overflow:hidden;display:grid;place-items:center;
+user-select:none;
+}
+.stage-bg{position:absolute;inset:0;transition:filter .3s,transform .3s,background .4s}
+.stage.grain::after{
+content:'';position:absolute;inset:0;pointer-events:none;opacity:.08;mix-blend-mode:overlay;
+background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+.glow{
+position:absolute;left:50%;top:50%;transform:translate(-50%,-52%);
+width:560px;height:780px;border-radius:50%;pointer-events:none;
+background:radial-gradient(closest-side,var(--glowc,#ff8f6b),transparent 72%);
+filter:blur(42px);opacity:.55;transition:opacity .3s;
+}
+.ground-shadow{
+position:absolute;left:50%;transform:translateX(-50%);
+width:340px;height:64px;border-radius:50%;
+background:radial-gradient(closest-side,rgba(0,0,0,.75),transparent 70%);
+filter:blur(16px);top:calc(50% + 352px);transition:opacity .3s;
+}
+.scene{position:relative;z-index:2;transition:transform .25s ease-out}
+/* ---------- ТЕЛЕФОН (Android, 1080×2460, голый экран) ---------- */
+.device{
+--fr-hi:#52555c;--fr-md:#26282d;--fr-lo:#0e0f12;
+width:296px;aspect-ratio:1080/2460;position:relative;
+}
+.device.silver{--fr-hi:#ffffff;--fr-md:#ccd0d7;--fr-lo:#878c96}
+.device.gold{--fr-hi:#ffeccb;--fr-md:#d9b98c;--fr-lo:#96753f}
+.device.deep{--fr-hi:#5d7392;--fr-md:#33455c;--fr-lo:#17202e}
+.frame{
+position:absolute;inset:0;border-radius:46px;padding:4px;
+background:linear-gradient(160deg,var(--fr-hi),var(--fr-md) 32%,var(--fr-lo) 72%,var(--fr-md));
+box-shadow:inset 0 0 3px rgba(255,255,255,.35), 0 0 0 1px rgba(0,0,0,.4);
+}
+.key{position:absolute;background:linear-gradient(var(--fr-hi),var(--fr-md));border-radius:3px}
+.key-vol{right:-3.5px;top:172px;width:4px;height:92px}
+.key-pwr{right:-3.5px;top:288px;width:4px;height:54px}
+.bezel{position:absolute;inset:4px;border-radius:42px;background:#050506;padding:7px}
+.screen{
+position:relative;width:100%;height:100%;border-radius:36px;overflow:hidden;
+background:#000;display:grid;place-items:center;cursor:pointer;
+}
+.screen video{width:100%;height:100%;object-fit:cover;display:none}
+.screen video.fit-contain{object-fit:contain}
+.screen video.fit-fill{object-fit:fill}
+.glass{
+position:absolute;inset:0;z-index:9;pointer-events:none;border-radius:36px;
+background:linear-gradient(115deg,rgba(255,255,255,.13) 0%,rgba(255,255,255,.035) 22%,transparent 42%);
+}
+/* плейсхолдер */
+.placeholder{position:absolute;inset:0;z-index:2;display:grid;place-items:center;text-align:center;color:#5b6270}
+.ph-ring{
+width:76px;height:76px;border-radius:50%;margin:0 auto 16px;display:grid;place-items:center;
+border:2px solid #2c3240;position:relative;animation:breathe 2.6s ease-in-out infinite;
+}
+.ph-ring::after{
+content:'';position:absolute;inset:-2px;border-radius:50%;
+border:2px solid transparent;border-top-color:var(--amber);animation:spin 3s linear infinite;
+}
+.placeholder b{display:block;font-size:14px;color:#8b93a5;margin-bottom:5px}
+.placeholder span{font-size:11.5px;line-height:1.6}
+@keyframes breathe{50%{transform:scale(1.06)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+/* оверлей «интерфейс приложения» */
+.app-ui{position:absolute;inset:0;z-index:5;display:none;color:#fff;pointer-events:none;
+filter:drop-shadow(0 1px 4px rgba(0,0,0,.55))}
+.screen.ui-on .app-ui{display:block}
+.app-top{position:absolute;top:26px;left:0;right:0;display:flex;justify-content:center;gap:22px;font-size:14px;font-weight:600}
+.app-top b{font-weight:800;border-bottom:2.5px solid #fff;padding-bottom:3px}
+.app-top span{opacity:.75}
+.app-rail{position:absolute;right:12px;bottom:150px;display:flex;flex-direction:column;align-items:center;gap:16px}
+.app-act{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11px;font-weight:700}
+.app-avatar{width:40px;height:40px;border-radius:50%;border:2px solid #fff;margin-bottom:8px;
+background:conic-gradient(from 200deg,#f0b35e,#e0526c,#8f7ad9,#f0b35e)}
+.app-bottom{position:absolute;left:14px;right:66px;bottom:30px;font-size:12.5px}
+.app-user{font-weight:800;margin-bottom:6px}
+.app-caption{line-height:1.45;opacity:.95;margin-bottom:8px}
+.app-music{display:flex;align-items:center;gap:6px;font-size:11.5px;font-weight:600;overflow:hidden;white-space:nowrap;width:170px}
+.app-music div{animation:marquee 7s linear infinite}
+@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.app-progress{position:absolute;left:14px;right:14px;bottom:14px;height:2.5px;background:rgba(255,255,255,.28);border-radius:2px}
+.app-progress i{display:block;height:100%;width:42%;background:#fff;border-radius:2px}
+/* подсказка и drag */
+.hint{
+position:absolute;bottom:18px;left:50%;transform:translateX(-50%);z-index:20;
+background:rgba(15,18,24,.72);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.1);
+color:#cdd4e0;font-size:11.5px;font-weight:600;padding:8px 16px;border-radius:30px;white-space:nowrap;
+}
+.drop-hint{
+position:absolute;inset:16px;z-index:30;border:2.5px dashed var(--amber);border-radius:24px;
+background:rgba(20,23,29,.7);backdrop-filter:blur(4px);display:none;place-items:center;
+font-family:Unbounded;font-size:18px;font-weight:700;color:var(--amber);
+}
+.stage.drag .drop-hint{display:grid}
+/* тост */
+.toast{
+position:fixed;bottom:24px;left:50%;transform:translate(-50%,80px);z-index:99;
+background:#262c38;border:1px solid #394153;color:var(--text);
+padding:11px 20px;border-radius:12px;font-size:13px;font-weight:600;box-shadow:0 10px 30px rgba(0,0,0,.5);
+transition:transform .35s cubic-bezier(.2,.9,.3,1.2);
+}
+.toast.show{transform:translate(-50%,0)}
+@media (max-width:980px){
+body{overflow:auto}
+main{grid-template-columns:1fr;grid-template-rows:66vh auto}
+.stage{order:-1}
+aside{border-right:none;border-top:1px solid var(--line)}
+header{flex-wrap:wrap;height:auto;padding:12px 16px;gap:10px}
+}
+</style>
+</head>
+<body>
+<header>
+<div class="logo">
+<div class="logo-badge">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="6" y="2" width="12" height="20" rx="3" stroke="#221703" stroke-width="2"/><path d="M10.5 9.5v5l4.5-2.5z" fill="#221703"/></svg>
+</div>
+<div><h1>МОКАП·СТУДИЯ</h1><small>превью видео на смартфоне · 2D</small></div>
+</div>
+<div class="spacer"></div>
+<div class="export-note">PNG · сцена 1080×1440<br>экран 1080×2460 · Android</div>
+<button class="btn amber" id="exportBtn">
+<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 3v12m0 0l-4.5-4.5M12 15l4.5-4.5M4 20h16"/></svg>
+Скачать PNG
+</button>
+</header>
+<main>
+<!-- ================= ПАНЕЛЬ ================= -->
+<aside>
+<section class="panel-sec">
+<h3><span class="num">01</span> Видео</h3>
+<div class="dropzone" id="dropzone">
+<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#f0b35e" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4m0 0L7.5 8.5M12 4l4.5 4.5"/><path d="M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg>
+<div>Перетащите видео сюда</div>
+<small>MP4 · WEBM · MOV</small>
+</div>
+<div class="row">
+<button class="btn ghost" id="pickBtn">Выбрать файл</button>
+<button class="btn teal" id="genBtn"><span id="genLabel">Сгенерировать ролик</span><span class="fill-bar" id="genBar"></span></button>
+</div>
+
+<div class="export-settings">
+  <div class="opt-group">
+    <span class="opt-label">Качество ролика</span>
+    <div class="seg" id="qualitySeg" role="radiogroup" aria-label="Качество ролика">
+      <button type="button" data-q="720">720p</button>
+      <button type="button" data-q="1080" class="active">1080p</button>
+      <button type="button" data-q="1440">1440p</button>
+      <button type="button" data-q="2160">2160p · 4K</button>
+    </div>
+  </div>
+
+  <div class="opt-group">
+    <span class="opt-label">Частота кадров</span>
+    <div class="seg" id="fpsSeg" role="radiogroup" aria-label="Частота кадров">
+      <button type="button" data-fps="30">30</button>
+      <button type="button" data-fps="60" class="active">60</button>
+      <button type="button" data-fps="90">90</button>
+      <button type="button" data-fps="120">120</button>
+    </div>
+  </div>
+
+  <p class="opt-hint" id="exportHint"></p>
+</div>
+<input type="file" id="fileInput" accept="video/*" hidden>
+<div class="transport">
+<button class="ibtn" id="playBtn" title="Плей / пауза">
+<svg id="icPlay" width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+<svg id="icPause" width="15" height="15" viewBox="0 0 24 24" fill="currentColor" style="display:none"><path d="M6 4h4v16H6zM14 4h4v16h-4z"/></svg>
+</button>
+<button class="ibtn" id="restartBtn" title="Сначала">
+<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M3 12a9 9 0 1 0 3-6.7M3 4v5h5"/></svg>
+</button>
+<button class="ibtn" id="muteBtn" title="Звук">
+<svg id="icMuted" width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3l3-3m0 6l-3-3" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/><path d="M3 9v6h4l5 5V4L7 9H3z"/></svg>
+<svg id="icUnmuted" width="15" height="15" viewBox="0 0 24 24" style="display:none" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 9v6h4l5 5V4L7 9H3z" fill="currentColor" stroke="none"/><path d="M16 8a5 5 0 0 1 0 8M18.5 5.5a9 9 0 0 1 0 13"/></svg>
+</button>
+<button class="ibtn active" id="loopBtn" title="Зациклить">
+<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 2l4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14M7 22l-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/></svg>
+</button>
+</div>
+<div class="lbl"><span>Заполнение экрана</span></div>
+<div class="seg" id="fitSeg">
+<button data-fit="contain">Вписать</button>
+<button data-fit="cover" class="on">Заполнить</button>
+<button data-fit="fill">Растянуть</button>
+</div>
+</section>
+<section class="panel-sec">
+<h3><span class="num">02</span> Устройство</h3>
+<div class="lbl"><span>Цвет корпуса</span></div>
+<div class="frame-grid">
+<div class="frame-sw on" data-frame="graphite" title="Графит" style="background:linear-gradient(160deg,#52555c,#26282d 50%,#0e0f12)"></div>
+<div class="frame-sw" data-frame="silver" title="Серебро" style="background:linear-gradient(160deg,#fff,#ccd0d7 50%,#878c96)"></div>
+<div class="frame-sw" data-frame="gold" title="Золото" style="background:linear-gradient(160deg,#ffeccb,#d9b98c 50%,#96753f)"></div>
+<div class="frame-sw" data-frame="deep" title="Тёмно-синий" style="background:linear-gradient(160deg,#5d7392,#33455c 50%,#17202e)"></div>
+</div>
+<div class="switch-row">Интерфейс приложения<label class="switch"><input type="checkbox" id="swUI"><i></i></label></div>
+</section>
+<section class="panel-sec">
+<h3><span class="num">03</span> Фон сцены</h3>
+<div class="sw-grid" id="bgGrid"></div>
+<div class="color-row">
+<input type="color" id="solidColor" value="#26303c"> Свой цвет
+<span style="flex:1"></span>
+<button class="btn ghost" style="padding:7px 12px;font-size:12px" id="imgBtn">Фото…</button>
+<input type="file" id="imgInput" accept="image/*" hidden>
+</div>
+<div class="lbl"><span>Размытие фона</span><output id="blurVal">0 px</output></div>
+<input type="range" id="blurRange" min="0" max="14" value="0">
+</section>
+<section class="panel-sec">
+<h3><span class="num">04</span> Сцена</h3>
+<div class="lbl"><span>Масштаб</span><output id="scaleVal">92%</output></div>
+<input type="range" id="scaleRange" min="60" max="120" value="92">
+<div class="lbl"><span>Тень</span><output id="shadowVal">55%</output></div>
+<input type="range" id="shadowRange" min="0" max="100" value="55">
+<div class="lbl"><span>Свечение</span><output id="glowVal">55%</output></div>
+<input type="range" id="glowRange" min="0" max="100" value="55">
+<div class="switch-row">Плёночное зерно<label class="switch"><input type="checkbox" id="swGrain" checked><i></i></label></div>
+</section>
+</aside>
+<!-- ================= СЦЕНА ================= -->
+<div class="stage grain" id="stage">
+<div class="stage-bg" id="stageBg"></div>
+<div class="glow" id="glowEl"></div>
+<div class="ground-shadow" id="groundShadow"></div>
+<div class="scene" id="sceneEl">
+<div class="device" id="device">
+<div class="frame">
+<span class="key key-vol"></span>
+<span class="key key-pwr"></span>
+<div class="bezel">
+<div class="screen" id="screen">
+<video id="video" playsinline loop muted></video>
+<div class="placeholder" id="placeholder">
+<div>
+<div class="ph-ring">
+<svg width="24" height="24" viewBox="0 0 24 24" fill="#3a4152"><path d="M8 5v14l11-7z"/></svg>
+</div>
+<b>Здесь будет ваше видео</b>
+<span>загрузите файл,<br>перетащите его в окно<br>или сгенерируйте ролик</span>
+</div>
+</div>
+<div class="app-ui">
+<div class="app-top"><span>Подписки</span><b>Для вас</b></div>
+<div class="app-rail">
+<div class="app-avatar"></div>
+<div class="app-act">
+<svg width="28" height="28" viewBox="0 0 24 24" fill="#fff"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+128K
+</div>
+<div class="app-act">
+<svg width="27" height="27" viewBox="0 0 24 24" fill="#fff"><path d="M20 2H4a2 2 0 0 0-2 2v18l4-4h14a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2z"/></svg>
+3 421
+</div>
+<div class="app-act">
+<svg width="27" height="27" viewBox="0 0 24 24" fill="#fff"><path d="M14 9V5l8 7-8 7v-4.1c-5 0-8.6 1.6-11.2 5.2C3.8 13 6.9 9.6 14 9z"/></svg>
+9 870
+</div>
+</div>
+<div class="app-bottom">
+<div class="app-user">@mockup.studio</div>
+<div class="app-caption">Превью вашего видео в мокапе смартфона 🚀 #мокап #дизайн</div>
+<div class="app-music">♪&nbsp;<div>Original sound — mockup studio&nbsp;&nbsp;•&nbsp;&nbsp;Original sound — mockup studio&nbsp;&nbsp;•&nbsp;&nbsp;</div></div>
+</div>
+<div class="app-progress"><i></i></div>
+</div>
+<div class="glass"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="drop-hint">БРОСЬТЕ ВИДЕО 🎬</div>
+<div class="hint">Перетащите видео в окно · клик по экрану — пауза · Space — плей/стоп</div>
+</div>
+</main>
+<div class="toast" id="toast"></div>
+<script>
+/* ================= СОСТОЯНИЕ ================= */
+const $ = id => document.getElementById(id);
+const state = {
+bgMode:'preset', bgIndex:4, bgColor:'#26303c', bgImg:null, blur:0,
+fit:'cover', frame:'graphite', ui:false,
+scale:.92, shadow:.55, glow:.55
+};
+let lastUrl = null;
+const video=$('video'), screen=$('screen'), stage=$('stage'), stageBg=$('stageBg'),
+sceneEl=$('sceneEl'), glowEl=$('glowEl'), shadowEl=$('groundShadow');
+/* ================= ФОНОВЫЕ ПРЕСЕТЫ ================= */
+const PRESETS=[
+{name:'Закат', glow:'#ff8f6b', type:'linear', angle:150, stops:[[0,'#ffe9a8'],[.4,'#ff9f68'],[.75,'#e0526c'],[1,'#7a3b8f']]},
+{name:'Персик', glow:'#ff9d7a', type:'linear', angle:140, stops:[[0,'#ffe3d3'],[.5,'#ffb48f'],[1,'#ff8a66']]},
+{name:'Океан', glow:'#6fd0c8', type:'linear', angle:150, stops:[[0,'#d9f3f2'],[.45,'#7fd4d0'],[1,'#2f7f86']]},
+{name:'Лаванда', glow:'#b9a3f2', type:'linear', angle:135, stops:[[0,'#efe4ff'],[.5,'#c6b2f5'],[1,'#8f7ad9']]},
+{name:'Лайм', glow:'#b5e36a', type:'linear', angle:140, stops:[[0,'#f2ffd8'],[.45,'#c3e97a'],[1,'#7cb44b']]},
+{name:'Студия', glow:'#f0b35e', type:'radial', stops:[[0,'#3d4351'],[.55,'#23262e'],[1,'#14161b']]},
+{name:'Бумага', glow:'#d9c9a8', type:'linear', angle:160, stops:[[0,'#ffffff'],[.55,'#f1efe9'],[1,'#d9d3c7']]},
+{name:'Полночь', glow:'#5b8cff', type:'linear', angle:160, stops:[[0,'#1d2740'],[.5,'#131a2c'],[1,'#0a0e18']]},
+];
+const cssStops = p => p.stops.map(([o,c])=>`${c} ${o*100}%`).join(',');
+const cssOf = p => p.type==='linear'
+? `linear-gradient(${p.angle}deg, ${cssStops(p)})`
+: `radial-gradient(120% 95% at 50% 22%, ${cssStops(p)})`;
+const bgGrid=$('bgGrid');
+PRESETS.forEach((p,i)=>{
+const b=document.createElement('button');
+b.className='sw'+(i===state.bgIndex?' on':''); b.title=p.name; b.style.background=cssOf(p);
+b.onclick=()=>{state.bgMode='preset';state.bgIndex=i;
+bgGrid.querySelectorAll('.sw').forEach(s=>s.classList.remove('on'));b.classList.add('on');applyBg();};
+bgGrid.appendChild(b);
+});
+function applyBg(){
+stageBg.style.filter=`blur(${state.blur}px)`;
+stageBg.style.transform=state.blur>0?'scale(1.06)':'none';
+if(state.bgMode==='preset'){stageBg.style.background=cssOf(PRESETS[state.bgIndex]);}
+else if(state.bgMode==='solid'){stageBg.style.background=state.bgColor;}
+else if(state.bgMode==='image'&&state.bgImg){
+stageBg.style.background=`url(${state.bgImg.src}) center/cover no-repeat`;
+}
+const gc=state.bgMode==='preset'?PRESETS[state.bgIndex].glow:(state.bgMode==='image'?'#ffffff':state.bgColor);
+glowEl.style.setProperty('--glowc',gc);
+}
+$('solidColor').oninput=e=>{state.bgMode='solid';state.bgColor=e.target.value;
+bgGrid.querySelectorAll('.sw').forEach(s=>s.classList.remove('on'));applyBg();};
+$('imgBtn').onclick=()=>$('imgInput').click();
+$('imgInput').onchange=e=>{const f=e.target.files[0];if(!f)return;
+const img=new Image();
+img.onload=()=>{state.bgMode='image';state.bgImg=img;
+bgGrid.querySelectorAll('.sw').forEach(s=>s.classList.remove('on'));applyBg();toast('Фон обновлён');};
+img.src=URL.createObjectURL(f);};
+$('blurRange').oninput=e=>{state.blur=+e.target.value;$('blurVal').value=e.target.value+' px';applyBg();};
+/* ================= СЦЕНА (2D) ================= */
+function applyScene(){
+sceneEl.style.transform=`scale(${state.scale})`;
+shadowEl.style.opacity=state.shadow;
+shadowEl.style.transform=`translateX(-50%) scale(${state.scale})`;
+glowEl.style.opacity=state.glow*.9;
+}
+const bindRange=(id,out,fmt,fn)=>{const r=$(id);r.oninput=e=>{const v=+e.target.value;$(out).value=fmt(v);fn(v);applyScene();};};
+bindRange('scaleRange','scaleVal',v=>v+'%',v=>state.scale=v/100);
+bindRange('shadowRange','shadowVal',v=>v+'%',v=>state.shadow=v/100);
+bindRange('glowRange','glowVal',v=>v+'%',v=>state.glow=v/100);
+$('swGrain').onchange=e=>stage.classList.toggle('grain',e.target.checked);
+/* ================= УСТРОЙСТВО ================= */
+document.querySelectorAll('.frame-sw').forEach(s=>{
+s.onclick=()=>{document.querySelectorAll('.frame-sw').forEach(x=>x.classList.remove('on'));
+s.classList.add('on');state.frame=s.dataset.frame;
+$('device').className='device '+state.frame;};
+});
+$('swUI').onchange=e=>{state.ui=e.target.checked;screen.classList.toggle('ui-on',state.ui);};
+/* ================= ВИДЕО ================= */
+function loadVideo(src){
+if(lastUrl)URL.revokeObjectURL(lastUrl); lastUrl=src;
+video.src=src; video.style.display='block'; $('placeholder').style.display='none';
+video.play().catch(()=>{});
+}
+function ensureVideoFrame(){
+return new Promise(res=>{
+if(video.readyState>=2) return res();
+const to=setTimeout(res,1500);
+video.addEventListener('loadeddata',()=>{clearTimeout(to);res();},{once:true});
+try{video.load();}catch(e){}
+});
+}
+function setFit(mode){
+state.fit=mode;
+video.className='fit-'+mode;
+document.querySelectorAll('#fitSeg button').forEach(b=>b.classList.toggle('on',b.dataset.fit===mode));
+}
+document.querySelectorAll('#fitSeg button').forEach(b=>b.onclick=()=>setFit(b.dataset.fit));
+$('pickBtn').onclick=()=>$('fileInput').click();
+$('dropzone').onclick=()=>$('fileInput').click();
+$('fileInput').onchange=e=>{const f=e.target.files[0];if(f)loadVideo(URL.createObjectURL(f));};
+/* drag&drop */
+let dragDepth=0;
+window.addEventListener('dragenter',e=>{e.preventDefault();dragDepth++;stage.classList.add('drag');});
+window.addEventListener('dragleave',e=>{e.preventDefault();if(--dragDepth<=0){dragDepth=0;stage.classList.remove('drag');}});
+window.addEventListener('dragover',e=>e.preventDefault());
+window.addEventListener('drop',e=>{
+e.preventDefault();dragDepth=0;stage.classList.remove('drag');
+const f=e.dataTransfer.files[0];
+if(f&&f.type.startsWith('video'))loadVideo(URL.createObjectURL(f));
+else toast('Нужен видеофайл (mp4 / webm / mov)');
+});
+/* транспорт */
+function syncPlayIcon(){
+$('icPlay').style.display=video.paused?'':'none';
+$('icPause').style.display=video.paused?'none':'';
+}
+video.addEventListener('play',syncPlayIcon);
+video.addEventListener('pause',syncPlayIcon);
+const togglePlay=()=>{if(!video.src)return;video.paused?video.play():video.pause();};
+$('playBtn').onclick=togglePlay;
+screen.onclick=togglePlay;
+$('restartBtn').onclick=()=>{video.currentTime=0;};
+$('muteBtn').onclick=()=>{video.muted=!video.muted;
+$('icMuted').style.display=video.muted?'':'none';
+$('icUnmuted').style.display=video.muted?'none':'';};
+$('loopBtn').onclick=function(){video.loop=!video.loop;this.classList.toggle('active',video.loop);};
+document.addEventListener('keydown',e=>{
+if(e.code==='Space'&&!/INPUT|BUTTON/.test(document.activeElement.tagName)){e.preventDefault();togglePlay();}
+});
+/* ================= РЕНДЕР СЦЕНЫ (общий для PNG и записи) ================= */
+const FRAMES={
+graphite:['#52555c','#26282d','#0e0f12'], silver:['#ffffff','#ccd0d7','#878c96'],
+gold:['#ffeccb','#d9b98c','#96753f'], deep:['#5d7392','#33455c','#17202e']
+};
+function rr(c,x,y,w,h,r){r=Math.min(r,Math.abs(w)/2,Math.abs(h)/2);c.beginPath();c.moveTo(x+r,y);
+c.arcTo(x+w,y,x+w,y+h,r);c.arcTo(x+w,y+h,x,y+h,r);c.arcTo(x,y+h,x,y,r);c.arcTo(x,y,x+w,y,r);c.closePath();}
+function drawSceneTo(c,W,H,sampleT){
+drawBgCanvas(c,W,H);
+/* свечение */
+if(state.glow>0){
+const gc=state.bgMode==='preset'?PRESETS[state.bgIndex].glow:(state.bgMode==='image'?'#ffffff':state.bgColor);
+const g=c.createRadialGradient(W/2,H/2,0,W/2,H/2,H*.46);
+g.addColorStop(0,gc);g.addColorStop(1,'rgba(0,0,0,0)');
+c.save();c.globalAlpha=state.glow*.5;c.fillStyle=g;c.fillRect(0,0,W,H);c.restore();
+}
+/* телефон: экран 1080×2460 */
+const ph=H*.78, pw=ph*1080/2460;
+c.save();
+c.translate(W/2,H/2);c.scale(state.scale,state.scale);c.translate(-pw/2,-ph/2);
+/* тень */
+c.save();c.translate(pw/2,ph+34);c.scale(1,.16);
+const sh=c.createRadialGradient(0,0,0,0,0,pw*.66);
+sh.addColorStop(0,`rgba(0,0,0,${.65*state.shadow})`);sh.addColorStop(1,'rgba(0,0,0,0)');
+c.fillStyle=sh;c.beginPath();c.arc(0,0,pw*.66,0,Math.PI*2);c.fill();c.restore();
+/* боковые кнопки (справа, Android) */
+const [hi,md,lo]=FRAMES[state.frame];
+c.fillStyle=md;
+rr(c,pw-1.5,ph*.255,6,ph*.125,3);c.fill();  /* громкость */
+rr(c,pw-1.5,ph*.415,6,ph*.075,3);c.fill();  /* питание   */
+/* корпус */
+const mg=c.createLinearGradient(0,0,pw,ph);
+mg.addColorStop(0,hi);mg.addColorStop(.35,md);mg.addColorStop(.78,lo);mg.addColorStop(1,md);
+c.fillStyle=mg;rr(c,0,0,pw,ph,pw*.155);c.fill();
+c.strokeStyle='rgba(0,0,0,.4)';c.lineWidth=1.5;rr(c,.75,.75,pw-1.5,ph-1.5,pw*.155);c.stroke();
+/* bezel + голый экран */
+const bz=pw*.014;
+c.fillStyle='#050506';rr(c,bz,bz,pw-bz*2,ph-bz*2,pw*.145);c.fill();
+const ins=pw*.032, sx=bz+ins, sy=bz+ins, sw=pw-(bz+ins)*2, sh2=ph-(bz+ins)*2, sr=pw*.115;
+c.save();rr(c,sx,sy,sw,sh2,sr);c.clip();
+c.fillStyle='#000';c.fillRect(sx,sy,sw,sh2);
+if(sampleT!=null) drawSampleScreen(c,sx,sy,sw,sh2,sampleT);
+else if(video.src&&video.readyState>=2) drawVideoCanvas(c,sx,sy,sw,sh2);
+else{c.fillStyle='#12151c';c.fillRect(sx,sy,sw,sh2);
+c.fillStyle='#5b6270';c.textAlign='center';c.font=`600 ${pw*.07}px Manrope,sans-serif`;
+c.fillText('Здесь будет видео',sx+sw/2,sy+sh2/2);}
+if(state.ui)drawAppUI(c,sx,sy,sw,sh2,pw);
+/* стекло */
+const gl=c.createLinearGradient(sx,sy,sx+sw,sy+sh2);
+gl.addColorStop(0,'rgba(255,255,255,.13)');gl.addColorStop(.22,'rgba(255,255,255,.035)');gl.addColorStop(.42,'rgba(255,255,255,0)');
+c.fillStyle=gl;c.fillRect(sx,sy,sw,sh2);
+c.restore();
+c.restore();
+}
+function drawBgCanvas(c,W,H){
+if(state.bgMode==='solid'){c.fillStyle=state.bgColor;c.fillRect(0,0,W,H);return;}
+if(state.bgMode==='image'&&state.bgImg&&state.bgImg.naturalWidth){
+const img=state.bgImg, iw=img.naturalWidth, ih=img.naturalHeight;
+const s=Math.max(W/iw,H/ih), dw=iw*s, dh=ih*s;
+c.save();
+if(state.blur>0)c.filter=`blur(${state.blur*2.2}px)`;
+c.drawImage(img,(W-dw)/2-12,(H-dh)/2-12,dw+24,dh+24);
+c.restore();return;
+}
+const p=PRESETS[state.bgIndex];
+let g;
+if(p.type==='linear'){
+const rad=p.angle*Math.PI/180, dx=Math.sin(rad), dy=-Math.cos(rad);
+const L=Math.abs(W*dx)+Math.abs(H*dy);
+g=c.createLinearGradient(W/2-dx*L/2,H/2-dy*L/2,W/2+dx*L/2,H/2+dy*L/2);
+}else g=c.createRadialGradient(W/2,H*.22,0,W/2,H*.22,H*.95);
+p.stops.forEach(([o,col])=>g.addColorStop(o,col));
+c.fillStyle=g;c.fillRect(0,0,W,H);
+}
+function drawVideoCanvas(c,x,y,w,h){
+const vw=video.videoWidth||9, vh=video.videoHeight||16;
+let dw,dh;
+if(state.fit==='fill'){dw=w;dh=h;}
+else{
+const cover=state.fit==='cover';
+const s=(w/h>vw/vh)===cover?w/vw:h/vh;
+dw=vw*s;dh=vh*s;
+}
+c.drawImage(video,x+(w-dw)/2,y+(h-dh)/2,dw,dh);
+}
+function drawSampleScreen(c,x,y,w,h,t){
+const bg=c.createLinearGradient(x,y,x,y+h);
+bg.addColorStop(0,'#12151c');bg.addColorStop(1,'#0a0c11');
+c.fillStyle=bg;c.fillRect(x,y,w,h);
+c.save();c.globalCompositeOperation='lighter';
+const blob=(bx,by,r,col)=>{const g=c.createRadialGradient(bx,by,0,bx,by,r);
+g.addColorStop(0,col);g.addColorStop(1,'rgba(0,0,0,0)');c.fillStyle=g;c.fillRect(x,y,w,h);};
+blob(x+w*.5+Math.sin(t/700)*w*.3, y+h*.3+Math.cos(t/900)*h*.08, w*.6,'rgba(240,179,94,.5)');
+blob(x+w*.5+Math.cos(t/800)*w*.34, y+h*.72+Math.sin(t/600)*h*.09, w*.62,'rgba(47,191,164,.4)');
+blob(x+w*.5+Math.sin(t/500)*w*.24, y+h*.5, w*.45,'rgba(224,82,108,.3)');
+c.restore();
+const cx0=x+w/2, cy0=y+h*.42, R=w*.32;
+c.strokeStyle='rgba(255,255,255,.85)';c.lineWidth=w*.014;
+c.beginPath();c.arc(cx0,cy0,R,0,Math.PI*2);c.stroke();
+const a=t/600;
+c.fillStyle='#f0b35e';c.beginPath();c.arc(cx0+Math.cos(a)*R,cy0+Math.sin(a)*R,w*.042,0,7);c.fill();
+c.fillStyle='#2fbfa4';c.beginPath();c.arc(cx0-Math.cos(a)*R,cy0-Math.sin(a)*R,w*.027,0,7);c.fill();
+c.textAlign='center';c.fillStyle='#fff';
+c.font=`600 ${w*.085}px Manrope,sans-serif`;
+c.fillText('П Р Е В Ь Ю',x+w/2,y+h*.12);
+c.font=`800 ${w*.26}px Unbounded,Manrope,sans-serif`;
+c.fillText((t/1000).toFixed(1),x+w/2,cy0+w*.05);
+c.font=`600 ${w*.07}px Manrope,sans-serif`;c.fillStyle='rgba(255,255,255,.7)';
+c.fillText('МОКАП·СТУДИЯ',x+w/2,y+h*.9);
+}
+function drawAppUI(c,sx,sy,sw,sh2,pw){
+c.save();c.shadowColor='rgba(0,0,0,.5)';c.shadowBlur=6;c.fillStyle='#fff';c.textAlign='center';
+c.font=`600 ${pw*.052}px Manrope,sans-serif`;
+c.globalAlpha=.75;c.fillText('Подписки',sx+sw/2-pw*.30,sy+pw*.20);
+c.globalAlpha=1;c.font=`800 ${pw*.056}px Manrope,sans-serif`;
+c.fillText('Для вас',sx+sw/2+pw*.16,sy+pw*.20);
+c.fillRect(sx+sw/2+pw*.02,sy+pw*.235,pw*.28,pw*.009);
+/* аватар + действия */
+const railX=sx+sw-pw*.155;let yy=sy+sh2*.36;
+c.beginPath();c.arc(railX,yy,pw*.062,0,7);c.fillStyle='#e0526c';c.fill();
+c.lineWidth=pw*.008;c.strokeStyle='#fff';c.stroke();
+yy+=pw*.15;
+c.font=`700 ${pw*.042}px Manrope,sans-serif`;
+const acts=[['128K',heart],['3 421',bubble],['9 870',dart]];
+acts.forEach(([txt,draw])=>{draw(c,railX,yy,pw*.115);yy+=pw*.055;
+c.fillText(txt,railX,yy+pw*.05);yy+=pw*.14;});
+/* низ */
+c.textAlign='left';
+c.font=`800 ${pw*.05}px Manrope,sans-serif`;
+c.fillText('@mockup.studio',sx+pw*.11,sy+sh2-pw*.46);
+c.font=`500 ${pw*.043}px Manrope,sans-serif`;
+c.fillText('Превью вашего видео в мокапе смартфона 🚀',sx+pw*.11,sy+sh2-pw*.36);
+c.font=`600 ${pw*.04}px Manrope,sans-serif`;
+c.fillText('♪  Original sound — mockup studio',sx+pw*.11,sy+sh2-pw*.26);
+c.globalAlpha=.3;c.fillRect(sx+pw*.11,sy+sh2-pw*.14,sw-pw*.22,pw*.012);
+c.globalAlpha=1;c.fillRect(sx+pw*.11,sy+sh2-pw*.14,(sw-pw*.22)*.42,pw*.012);
+c.restore();
+function heart(c,x,y,s){c.save();c.translate(x,y);c.scale(s,s);c.beginPath();
+c.moveTo(0,-.22);c.bezierCurveTo(-.25,-.55,-.62,-.28,-.62,-.02);
+c.bezierCurveTo(-.62,.22,-.3,.42,0,.62);c.bezierCurveTo(.3,.42,.62,.22,.62,-.02);
+c.bezierCurveTo(.62,-.28,.25,-.55,0,-.22);c.closePath();c.fill();c.restore();}
+function bubble(c,x,y,s){c.save();c.translate(x-s/2,y-s*.4);
+rr(c,0,0,s,s*.78,s*.22);c.fill();
+c.beginPath();c.moveTo(s*.22,s*.76);c.lineTo(s*.4,s*1.02);c.lineTo(s*.46,s*.76);c.closePath();c.fill();c.restore();}
+function dart(c,x,y,s){c.save();c.translate(x-s/2,y-s/2);c.beginPath();
+c.moveTo(0,0);c.lineTo(s,s/2);c.lineTo(0,s);c.lineTo(s*.24,s/2);c.closePath();c.fill();c.restore();}
+}
+/* ================= ГЕНЕРАЦИЯ РОЛИКА (запись сцены с видео) ================= */
+let recording=false;
+$('genBtn').onclick=async()=>{
+if(recording)return;
+recording=true;
+const btn=$('genBtn'),lbl=$('genLabel'),bar=$('genBar');
+btn.disabled=true;
+try{
+await document.fonts.ready;
+const hasVideo=!!video.src;
+if(hasVideo){
+await ensureVideoFrame();
+if(video.paused)video.play().catch(()=>{});
+}
+let dur=6000;
+if(hasVideo){
+const d=video.duration;
+dur=(isFinite(d)&&d>0)?Math.min(d*1000,20000):6000;
+}
+const res=await recordScene(dur,hasVideo,p=>{
+lbl.textContent=`Запись ${Math.round(p*100)}%`;bar.style.width=(p*100)+'%';
+});
+const ext=res.blob.type.includes('mp4')?'mp4':'webm';
+const a=document.createElement('a');
+a.href=URL.createObjectURL(res.blob);a.download=`mockup-scene.${ext}`;a.click();
+setTimeout(()=>URL.revokeObjectURL(a.href),4000);
+toast('Ролик записан и сохранён ✓');
+}catch(err){toast('Запись недоступна: '+err.message);}
+lbl.textContent='Сгенерировать ролик';bar.style.width='0%';
+btn.disabled=false;recording=false;
+};
+function recordScene(durMs,withVideo,onProgress){
+return new Promise((resolve,reject)=>{
+if(!window.MediaRecorder)return reject(new Error('MediaRecorder не поддерживается'));
+const W=1080,H=1440;
+const cv=document.createElement('canvas');cv.width=W;cv.height=H;
+if(!cv.captureStream)return reject(new Error('captureStream не поддерживается'));
+const c=cv.getContext('2d');
+const mimes=['video/mp4;codecs=avc1.42E01E','video/mp4','video/webm;codecs=vp9','video/webm;codecs=vp8','video/webm'];
+const mime=mimes.find(m=>MediaRecorder.isTypeSupported(m));
+if(!mime)return reject(new Error('нет поддерживаемого кодека'));
+const stream=cv.captureStream(30);
+/* по возможности подмешиваем звук исходного ролика */
+if(withVideo&&typeof video.captureStream==='function'){
+try{video.captureStream().getAudioTracks().forEach(t=>stream.addTrack(t));}catch(e){}
+}
+const rec=new MediaRecorder(stream,{mimeType:mime,videoBitsPerSecond:8e6});
+const chunks=[];
+rec.ondataavailable=e=>{if(e.data&&e.data.size)chunks.push(e.data);};
+rec.onerror=()=>reject(new Error('ошибка кодирования'));
+rec.onstop=()=>resolve({blob:new Blob(chunks,{type:mime}),mime});
+drawSceneTo(c,W,H,withVideo?null:0); /* прогрев кадра */
+rec.start(250);
+const t0=performance.now();
+(function frame(now){
+const t=now-t0;
+drawSceneTo(c,W,H,withVideo?null:t);
+onProgress(Math.min(t/durMs,1));
+if(t<durMs)requestAnimationFrame(frame);
+else setTimeout(()=>rec.stop(),150);
+})(t0);
+});
+}
+/* ================= ЭКСПОРТ PNG ================= */
+$('exportBtn').onclick=async()=>{
+await document.fonts.ready;
+toast('Рендер…');
+if(video.src)await ensureVideoFrame();
+const W=1080,H=1440;
+const cv=document.createElement('canvas');cv.width=W;cv.height=H;
+const c=cv.getContext('2d');
+drawSceneTo(c,W,H,null);
+cv.toBlob(b=>{
+const a=document.createElement('a');
+a.href=URL.createObjectURL(b);a.download='phone-mockup.png';a.click();
+setTimeout(()=>URL.revokeObjectURL(a.href),3000);
+toast('PNG сохранён ✓');
+},'image/png');
+};
+/* ================= ТОСТ / ИНИЦИАЛИЗАЦИЯ ================= */
+let toastTimer;
+function toast(msg){const t=$('toast');t.textContent=msg;t.classList.add('show');
+clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),2600);}
+applyBg();applyScene();setFit('cover');
+</script>
+
+<script>
+(() => {
+  const EXPORT = { quality: 1080, fps: 60 };
+  const RATIO = 1080 / 1440; // пропорция сцены (портрет 3:4)
+
+  const sizeFor = h => ({ w: Math.round(h * RATIO / 2) * 2, h });
+  const BITRATE = { 720: 4e6, 1080: 8e6, 1440: 14e6, 2160: 24e6 };
+  const bitrate = () => Math.round(BITRATE[EXPORT.quality] * EXPORT.fps / 60);
+
+  function bindSeg(el, key, dataAttr, onPick){
+    el.addEventListener('click', e => {
+      const b = e.target.closest(`button[data-${dataAttr}]`);
+      if (!b) return;
+      el.querySelectorAll('button').forEach(x => x.classList.toggle('active', x === b));
+      onPick(+b.dataset[dataAttr]);
+    });
+  }
+
+  const hint = document.getElementById('exportHint');
+  function refreshHint(){
+    const { w, h } = sizeFor(EXPORT.quality);
+    hint.textContent = `${w}×${h} · ${EXPORT.fps} fps · ~${(bitrate()/1e6).toFixed(1)} Мбит/с`;
+  }
+
+  bindSeg(document.getElementById('qualitySeg'), 'quality', 'q',   v => { EXPORT.quality = v; refreshHint(); });
+  bindSeg(document.getElementById('fpsSeg'),     'fps',     'fps', v => { EXPORT.fps = v;     refreshHint(); });
+  refreshHint();
+
+  // наружу — для функции генерации
+  window.ExportSettings = { sizeFor, bitrate,
+    get quality(){ return EXPORT.quality; },
+    get fps(){ return EXPORT.fps; } };
+})();
+</script>
+
+
+</body>
+</html>
